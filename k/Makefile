@@ -27,9 +27,11 @@ TARGET	= k
 OBJS	= \
 	  crt0.o \
 	  k.o \
+	  io.o \
 	  libvga.o \
 	  list.o \
 	  memory.o \
+	  isr.o \
 
 
 DEPS = $(OBJS:.o=.d)

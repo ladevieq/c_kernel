@@ -1,6 +1,6 @@
 #include <string.h>
+#include <k/io.h>
 
-int write(const char *s, size_t nb);
 
 int puts(const char *s)
 {
