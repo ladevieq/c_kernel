@@ -333,6 +333,9 @@ void set_trap_gate_IDT(u8 gate_index, void* offset) {
 
 void init_IDT() {
     set_interrupt_gate_IDT(3, (void*) &isr_3);
+    set_interrupt_gate_IDT(8, (void*) &isr_8);
+    set_interrupt_gate_IDT(10, (void*) &isr_10);
+    set_interrupt_gate_IDT(17, (void*) &isr_17);
 
     set_IDT();
 }
@@ -351,7 +354,8 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_GDT();
     init_IDT();
 
-    asm volatile ("int $3");
+    // asm volatile ("int $3");
+    asm volatile ("int $10");
 
     for (unsigned i = 0; ; ) {
         *fb = star[i++ % 4];
