@@ -1,16 +1,19 @@
+#ifndef K_ISR_H
+#define K_ISR_H
+
 #include <k/types.h>
 
 #include <stdio.h>
 
-#define X(interrupt_code) extern void isr_##interrupt_code(void);
+#define X(vector_number, interrupt_name) extern void isr_##vector_number(void);
 #include <k/isr.def>
 #undef X
 
-// #define X(interrupt_code, interrupt_name) INTERRUPT_##interrupt_name = interrupt_code,
-// enum INTERRUPTS_NAME {
-// #include <k/isr.def>
-// };
-// #undef X
+#define X(vector_number, interrupt_name) INTERRUPT_##interrupt_name = vector_number,
+enum INTERRUPTS_NAME {
+#include <k/isr.def>
+};
+#undef X
 
 struct Registers {
     u32 eax;
@@ -23,10 +26,12 @@ struct Registers {
     u32 edi;
 };
 
-extern void interrupt_handler(struct Registers registers, u32 interrupt_code, u32 error_code) {
-    printf("Received interrupt %u\n", interrupt_code);
+extern void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_code) {
+    printf("Received interrupt %u\n", vector_number);
 
     if (error_code != 0) {
         printf("Interrupt with error occured error code : %u", error_code);
     }
 }
+
+#endif				/* !ISR_H_ */

@@ -31,6 +31,8 @@ OBJS	= \
 	  libvga.o \
 	  list.o \
 	  memory.o \
+	  gdt.o \
+	  idt.o \
 	  isr.o \
 
 

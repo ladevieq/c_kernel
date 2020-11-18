@@ -47,8 +47,7 @@ gen_error_code_isr 17
 gen_isr 18
 gen_isr 19
 gen_isr 20
-gen_error_code_isr 30
-
+gen_error_code_isr 21
 
 .set i,32
 .rept 224
