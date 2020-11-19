@@ -115,6 +115,8 @@ struct LineStatusRegister {
 
 void init_COM1();
 
+void io_wait();
+
 size_t write(const char* buf, size_t count);
 
 

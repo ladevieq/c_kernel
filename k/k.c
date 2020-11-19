@@ -25,6 +25,7 @@
 #include <k/io.h>
 #include <k/gdt.h>
 #include <k/idt.h>
+#include <k/pic.h>
 
 #include "multiboot.h"
 
@@ -39,6 +40,7 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_COM1();
     init_GDT();
     init_IDT();
+    init_PIC();
 
     // asm volatile ("int $3");
     // asm volatile ("int $10");

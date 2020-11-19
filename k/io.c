@@ -39,7 +39,7 @@ void init_COM1() {
 	outb(COM1 + FCR_OFFSET, fcr.data);
 }
 
-void wait_for_transmission() {
+void io_wait() {
 	struct LineStatusRegister lsr = { .data = inb(COM1 + 5) };
 	do {
 		lsr.data = inb(COM1 + 5);
@@ -49,7 +49,7 @@ void wait_for_transmission() {
 size_t write(const char* buf, size_t count) {
 	for (size_t i = 0; i < count; i++) {
 		if (i % FIFO_SIZE == 0) {
-			wait_for_transmission();
+			io_wait();
 		}
 
 		if (buf[i] == '\n') {

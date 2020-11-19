@@ -34,6 +34,7 @@ OBJS	= \
 	  gdt.o \
 	  idt.o \
 	  isr.o \
+	  pic.o \
 
 
 DEPS = $(OBJS:.o=.d)
