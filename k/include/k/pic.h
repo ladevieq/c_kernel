@@ -42,4 +42,7 @@ void unmask_IRQ(u8 IRQ_index);
 
 void send_EOI(u8 latest_IRQ_index);
 
+void enable_PIC_interrupts();
+void disable_PIC_interrupts();
+
 #endif				/* !PIC_H_ */

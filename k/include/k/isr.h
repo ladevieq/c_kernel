@@ -36,13 +36,9 @@ extern void interrupt_handler(struct Registers registers, u32 vector_number, u32
 
     if (vector_number > 31 && vector_number < 32 + 8) {
         printf("Master PIC interrupt");
+        send_EOI(vector_number);
     } else if (vector_number > 31 + 8 && vector_number < 32 + 16) {
         printf("Slave PIC interrupt");
-    }
-
-    if (vector_number == INTERRUPT_IRQ_1) {
-        printf("Keyboard pressed\n");
-
         send_EOI(vector_number);
     }
 
