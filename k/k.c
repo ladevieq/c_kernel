@@ -42,6 +42,8 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_IDT();
     init_PIC();
 
+    // Test divide by zero int
+    // asm volatile ("movl $3, %eax\nmovl $0, %edi\ndivl %edi");
     // asm volatile ("int $3");
     // asm volatile ("int $10");
 

@@ -2,6 +2,7 @@
 #define K_ISR_H
 
 #include <k/types.h>
+#include <k/pic.h>
 
 #include <stdio.h>
 
@@ -28,6 +29,22 @@ struct Registers {
 
 extern void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_code) {
     printf("Received interrupt %u\n", vector_number);
+
+    if (vector_number == INTERRUPT_DIVIDE_BY_ZERO) {
+        printf("Divide by zero issued\n");
+    }
+
+    if (vector_number > 31 && vector_number < 32 + 8) {
+        printf("Master PIC interrupt");
+    } else if (vector_number > 31 + 8 && vector_number < 32 + 16) {
+        printf("Slave PIC interrupt");
+    }
+
+    if (vector_number == INTERRUPT_IRQ_1) {
+        printf("Keyboard pressed\n");
+
+        send_EOI(vector_number);
+    }
 
     if (error_code != 0) {
         printf("Interrupt with error occured error code : %u", error_code);

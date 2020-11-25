@@ -23,7 +23,7 @@
 
 // ICW3
 // Define which IRQ is connected to the slave PIC
-#define MASTER_PIC_WIRING           0b00000010
+#define MASTER_PIC_WIRING           0b00000100
 // Define which IRQ of the master is connected to the slave
 #define SLAVE_PIC_WIRING            0b00000010
 
@@ -33,11 +33,13 @@
 // No buffering, no special mode and no automatic EOI
 #define ICW4_BASE                   0b00000001
 
-#define OCW2_ACKNOWLEDGE_IRQ        0b00100000
+#define OCW2_EOI                    0b00100000
 
 void init_PIC();
 
 void mask_IRQ(u8 IRQ_index);
 void unmask_IRQ(u8 IRQ_index);
+
+void send_EOI(u8 latest_IRQ_index);
 
 #endif				/* !PIC_H_ */

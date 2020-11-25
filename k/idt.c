@@ -39,10 +39,27 @@ void set_trap_gate_IDT(u8 gate_index, u32 offset) {
 }
 
 void init_IDT() {
+    set_interrupt_gate_IDT(0, (u32) &isr_0); // Divide by zero
     set_interrupt_gate_IDT(3, (u32) &isr_3);
-    set_interrupt_gate_IDT(8, (u32) &isr_8);
+    // set_interrupt_gate_IDT(8, (u32) &isr_8);
     set_interrupt_gate_IDT(10, (u32) &isr_10);
     set_interrupt_gate_IDT(17, (u32) &isr_17);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_0, (u32) &isr_32);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_1, (u32) &isr_33);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_2, (u32) &isr_34);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_3, (u32) &isr_35);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_4, (u32) &isr_36);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_5, (u32) &isr_37);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_6, (u32) &isr_38);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_7, (u32) &isr_39);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_8, (u32) &isr_40);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_9, (u32) &isr_41);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_10, (u32) &isr_42);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_11, (u32) &isr_43);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_12, (u32) &isr_44);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_13, (u32) &isr_45);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_14, (u32) &isr_46);
+    set_interrupt_gate_IDT(INTERRUPT_IRQ_15, (u32) &isr_47);
 
     set_IDT();
 }
