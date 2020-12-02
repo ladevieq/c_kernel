@@ -22,8 +22,8 @@ void init_PIC() {
 
 
     // Mask all interrupts through OCW1 to PIC's data port
-    outb(MASTER_PIC_DATA_PORT, 0b00000000);
-    outb(SLAVE_PIC_DATA_PORT, 0b00000000);
+    outb(MASTER_PIC_DATA_PORT, 0b11111101);
+    outb(SLAVE_PIC_DATA_PORT, 0b11111111);
 
     enable_PIC_interrupts();
 }
@@ -56,10 +56,10 @@ void unmask_IRQ(u8 IRQ_index) {
     }
 }
 
-void send_EOI(u8 latest_IRQ_index) {
+void send_EOI(u8 vector_number) {
     outb(MASTER_PIC_COMMAND_PORT, OCW2_EOI);
 
-    if (latest_IRQ_index >= 8) {
+    if (vector_number >= SLAVE_PIC_VECTOR_OFFSET) {
         outb(SLAVE_PIC_COMMAND_PORT, OCW2_EOI);
     }
 }

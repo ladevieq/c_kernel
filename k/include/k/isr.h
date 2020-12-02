@@ -28,17 +28,22 @@ struct Registers {
 };
 
 extern void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_code) {
-    printf("Received interrupt %u\n", vector_number);
+    // printf("Received interrupt %u\n", vector_number);
 
     if (vector_number == INTERRUPT_DIVIDE_BY_ZERO) {
         printf("Divide by zero issued\n");
     }
 
-    if (vector_number > 31 && vector_number < 32 + 8) {
-        printf("Master PIC interrupt");
-        send_EOI(vector_number);
-    } else if (vector_number > 31 + 8 && vector_number < 32 + 16) {
-        printf("Slave PIC interrupt");
+    if (vector_number >= MASTER_PIC_VECTOR_OFFSET
+        && vector_number < SLAVE_PIC_VECTOR_OFFSET + 7) {
+        if (vector_number == INTERRUPT_TIMER_IRQ) {
+            printf("Timer int\n");
+        }
+
+        if (vector_number == INTERRUPT_KEYBOARD_IRQ) {
+            printf("A key was pressed\n");
+        }
+
         send_EOI(vector_number);
     }
 

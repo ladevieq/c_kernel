@@ -44,8 +44,8 @@ void init_IDT() {
     // set_interrupt_gate_IDT(8, (u32) &isr_8);
     set_interrupt_gate_IDT(10, (u32) &isr_10);
     set_interrupt_gate_IDT(17, (u32) &isr_17);
-    set_interrupt_gate_IDT(INTERRUPT_IRQ_0, (u32) &isr_32);
-    set_interrupt_gate_IDT(INTERRUPT_IRQ_1, (u32) &isr_33);
+    set_interrupt_gate_IDT(INTERRUPT_TIMER_IRQ, (u32) &isr_32);
+    set_interrupt_gate_IDT(INTERRUPT_KEYBOARD_IRQ, (u32) &isr_33);
     set_interrupt_gate_IDT(INTERRUPT_IRQ_2, (u32) &isr_34);
     set_interrupt_gate_IDT(INTERRUPT_IRQ_3, (u32) &isr_35);
     set_interrupt_gate_IDT(INTERRUPT_IRQ_4, (u32) &isr_36);
