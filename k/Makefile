@@ -34,7 +34,9 @@ OBJS	= \
 	  gdt.o \
 	  idt.o \
 	  isr.o \
+	  int.o \
 	  pic.o \
+	  keyboard.o \
 
 
 DEPS = $(OBJS:.o=.d)
