@@ -11,7 +11,9 @@ void init_TIMER(void) {
 
     outb(register_state, PIT_CONTROL_REGISTER);
 
-    outb(PIT_INTERNAL_FREQUENCY / PIT_DESIRED_FREQUENCY, PIT_COUNTER_0);
+    u16 divider = PIT_INTERNAL_FREQUENCY / PIT_DESIRED_FREQUENCY;
+    outb(PIT_COUNTER_0, (u8)divider);
+    outb(PIT_COUNTER_0, (u8)(divider >> 8));
 }
 
 void tick(void) {
@@ -19,5 +21,5 @@ void tick(void) {
 }
 
 u64 gettick(void) {
-    return TICK_COUNT * 100;
+    return TICK_COUNT * 10; // Convert ticks to ms
 }
