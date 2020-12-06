@@ -26,6 +26,7 @@
 #include <k/gdt.h>
 #include <k/idt.h>
 #include <k/pic.h>
+#include <k/timer.h>
 
 #include "multiboot.h"
 
@@ -40,6 +41,7 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_COM1();
     init_GDT();
     init_IDT();
+    init_TIMER();
     init_PIC();
 
     // Test divide by zero int

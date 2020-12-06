@@ -22,7 +22,7 @@ void init_PIC() {
 
 
     // Mask all interrupts through OCW1 to PIC's data port
-    outb(MASTER_PIC_DATA_PORT, 0b11111101);
+    outb(MASTER_PIC_DATA_PORT, 0b11111100);
     outb(SLAVE_PIC_DATA_PORT, 0b11111111);
 
     enable_PIC_interrupts();

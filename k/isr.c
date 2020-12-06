@@ -1,6 +1,7 @@
 #include <k/isr.h>
 #include <k/keyboard.h>
 #include <k/pic.h>
+#include <k/timer.h>
 
 #include <stdio.h>
 
@@ -14,7 +15,7 @@ void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_
     if (vector_number >= MASTER_PIC_VECTOR_OFFSET
         && vector_number < SLAVE_PIC_VECTOR_OFFSET + 7) {
         if (vector_number == INTERRUPT_TIMER_IRQ) {
-            printf("Timer int\n");
+            tick();
         }
 
         if (vector_number == INTERRUPT_KEYBOARD_IRQ) {
@@ -22,7 +23,8 @@ void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_
 
             s32 key = getkey();
             if (key > 0) {
-                printf("%d key pressed\n", key);
+                // printf("%d key pressed\n", key);
+                printf("%u ms elapsed since startup\n", gettick());
             }
         }
 
