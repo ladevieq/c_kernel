@@ -40,11 +40,5 @@ void pullkey(void) {
 }
 
 s32 getkey(void) {
-    s32 key = dequeue_key();
-
-    if (key == -1) {
-        printf("Queue is empty\n");
-    }
-
-    return key;
+    return dequeue_key();
 }

@@ -22,7 +22,7 @@ void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_
 
             s32 key = getkey();
             if (key > 0) {
-                // printf("%c key pressed\n", key);
+                printf("%d key pressed\n", key);
             }
         }
 
