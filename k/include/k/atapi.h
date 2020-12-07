@@ -84,4 +84,6 @@ struct SCSI_packet {
 	u8 control;
 } __packed;
 
+void init_ATAPI();
+
 #endif /* !ATAPI_H_ */

@@ -27,6 +27,7 @@
 #include <k/idt.h>
 #include <k/pic.h>
 #include <k/timer.h>
+#include <k/atapi.h>
 
 #include "multiboot.h"
 
@@ -43,6 +44,7 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_IDT();
     init_TIMER();
     init_PIC();
+    init_ATAPI();
 
     // Test divide by zero int
     // asm volatile ("movl $3, %eax\nmovl $0, %edi\ndivl %edi");
