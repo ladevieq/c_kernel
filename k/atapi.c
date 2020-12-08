@@ -4,6 +4,9 @@
 #include <string.h>
 #include <stdio.h>
 
+static u16 ATAPI_bus = 0;
+static u8 ATAPI_drive = 0;
+
 // Methodology
 // Write ‘waiting’ helper functions:
 // void busy_wait(u16 drive);
@@ -17,6 +20,12 @@
 // Feel free to modify the proposed function prototypes.
 
 // Wait helper functions
+void busy_wait(u16 bus) {
+    while((ATA_REG_STATUS(bus) & BSY) != 0 &&
+          (ATA_REG_STATUS(bus) & DRQ) != DRQ) {
+    }
+}
+
 /* ATA specifies a 400ns delay after drive switching -- often
  * implemented as 4 Alternative Status queries. */
 void wait_device_selection(u16 bus) {
@@ -24,6 +33,24 @@ void wait_device_selection(u16 bus) {
     inb(bus);
     inb(bus);
     inb(bus);
+}
+
+void wait_packet_request(u16 bus) {
+    while(ATA_REG_SECTOR_COUNT(bus) == PACKET_DATA_TRANSMIT) {
+    }
+}
+
+
+u32 send_packet(struct SCSI_packet *packet, u16 bus, size_t size) {
+    busy_wait(bus);
+
+    outb(ATA_REG_FEATURES(bus), 0);     // No overlap / DMA
+    outb(ATA_REG_SECTOR_COUNT(bus), 0); // No queuing
+    outb(ATA_REG_LBA_MI(bus), CD_BLOCK_SZ);
+    outb(ATA_REG_LBA_HI(bus), CD_BLOCK_SZ >> 8);
+    outb(ATA_REG_COMMAND(bus), READ_12);
+
+    wait_packet_request(bus);
 }
 
 
@@ -69,6 +96,9 @@ void discover_atapi_drive(void) {
             u8 drive = drives[drive_index];
 
             if (is_atapi_drive          (bus, drive)) {
+                ATAPI_bus = bus;
+                ATAPI_drive = drive;
+
                 if (bus == PRIMARY_REG) {
                     printf ("Primary bus\t Drive : %d\t is an ATAPI drive\n", drive);
                 } else {
@@ -82,4 +112,18 @@ void discover_atapi_drive(void) {
 
 void init_ATAPI() {
     discover_atapi_drive();
+
+    send_packet(0, ATAPI_bus, 0);
+
+    printf("Ready to read from ATAPI drive !");
+
+    struct test {
+        union {
+            u8 voldesc;
+            char      std_identifier[5]; /* Standard Identifier (CD001) */
+        };
+        u16 data;
+    } __packed;
+
+    struct test t = { .data = inw(ATA_REG_DATA(ATAPI_bus)) };
 }
