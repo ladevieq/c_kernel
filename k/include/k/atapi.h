@@ -86,4 +86,6 @@ struct SCSI_packet {
 
 void init_ATAPI();
 
+void read_block(size_t lba, u16* block);
+
 #endif /* !ATAPI_H_ */

@@ -97,42 +97,53 @@ struct iso_dir {
 # define ISO_LDATE_LEN  17
 
 struct iso_prim_voldesc {
-	u8   vol_desc_type;   /* Volume Descriptor Type (1) */
-	char      std_identifier[5]; /* Standard Identifier (CD001) */
-	u8   vol_desc_version;  /* Volume Descriptor Version (1) */
-	u8   unused1; /* Unused Field */
-	char      syidf[ISO_SYSIDF_LEN]; /* System Identifier */
-	char      vol_idf[ISO_VOLIDF_LEN]; /* Volume Identifier */
-	u8   unused2[8]; /* Unused Field */
-	struct endian32  vol_blk_count;
+	u8                  vol_desc_type;   /* Volume Descriptor Type (1) */
+	char                std_identifier[5]; /* Standard Identifier (CD001) */
+	u8                  vol_desc_version;  /* Volume Descriptor Version (1) */
+	u8                  unused1; /* Unused Field */
+	char                syidf[ISO_SYSIDF_LEN]; /* System Identifier */
+	char                vol_idf[ISO_VOLIDF_LEN]; /* Volume Identifier */
+	u8                  unused2[8]; /* Unused Field */
+	struct endian32     vol_blk_count;
+
 	/* Number of logical blocks in the Volume (LE)*/
-	u8   unused4[32]; /* Unused Field */
-	struct endian16  vol_set_size; /* The Volume Set size of the Volume */
-	struct endian16  vol_seq_num; /* The number of the volume in the Set */
-	struct endian16  vol_blk_size; /* The size in bytes of a Logical Block */
-	struct endian32  path_table_size; /* Length in bytes of the path table */
-	u32  le_path_table_blk; /* LittleEndian path table block index */
-	u32  le_opath_table_blk;
+	u8                  unused4[32]; /* Unused Field */
+	struct endian16     vol_set_size; /* The Volume Set size of the Volume */
+	struct endian16     vol_seq_num; /* The number of the volume in the Set */
+	struct endian16     vol_blk_size; /* The size in bytes of a Logical Block */
+	struct endian32     path_table_size; /* Length in bytes of the path table */
+	u32                 le_path_table_blk; /* LittleEndian path table block index */
+	u32                 le_opath_table_blk;
+
 	/* LittleEndian optional path table block index */
-	u32  be_path_table_blk; /* BigEndian path table block index */
-	u32  be_opath_table_blk; /* BigEndian optional path table block index */
+	u32                 be_path_table_blk; /* BigEndian path table block index */
+	u32                 be_opath_table_blk; /* BigEndian optional path table block index */
 
-	struct iso_dir   root_dir;    /* Root directory entry */
-	u8 unused5[34 - sizeof (struct iso_dir)];/* padding */
+	struct iso_dir      root_dir;    /* Root directory entry */
+	u8                  unused5[34 - sizeof (struct iso_dir)];/* padding */
 
-	char    volset_idf[ISO_VOLSET_LEN];  /* Name of the multiple volume set */
-	char    pub_idf[ISO_PUBIDF_LEN]; /* Publisher name */
-	char    dprep_idf[ISO_DPREP_LEN];  /* Data preparer name */
-	char    app_idf[ISO_APP_LEN];  /* Application name */
+	char                volset_idf[ISO_VOLSET_LEN];  /* Name of the multiple volume set */
+	char                pub_idf[ISO_PUBIDF_LEN]; /* Publisher name */
+	char                dprep_idf[ISO_DPREP_LEN];  /* Data preparer name */
+	char                app_idf[ISO_APP_LEN];  /* Application name */
 
-	char    copyright_file[ISO_CPRFIL_LEN]; /* Copyright file name in root dir */
-	char    abstract_file[ISO_ABSFIL_LEN]; /* Abstract file name in root dir */
-	char    bibli_file[ISO_BIBFIL_LEN]; /* Bibliographic file name in root dir */
-	char    date_creat[ISO_LDATE_LEN]; /* Creation date */
-	char    date_modif[ISO_LDATE_LEN]; /* Modification date */
-	char    date_expir[ISO_LDATE_LEN]; /* Expiration date */
-	char    date_effect[ISO_LDATE_LEN]; /* Effective date */
-	u8 filestrutc_version;  /* File Structure Version (1) */
+	char                copyright_file[ISO_CPRFIL_LEN]; /* Copyright file name in root dir */
+	char                abstract_file[ISO_ABSFIL_LEN]; /* Abstract file name in root dir */
+	char                bibli_file[ISO_BIBFIL_LEN]; /* Bibliographic file name in root dir */
+	char                date_creat[ISO_LDATE_LEN]; /* Creation date */
+	char                date_modif[ISO_LDATE_LEN]; /* Modification date */
+	char                date_expir[ISO_LDATE_LEN]; /* Expiration date */
+	char                date_effect[ISO_LDATE_LEN]; /* Effective date */
+	u8                  filestrutc_version;  /* File Structure Version (1) */
 } __packed;
+
+
+int open(const char *pathname, int flags);
+
+ssize_t read(int fd, void *buf, size_t count);
+
+size_t seek(int fd, size_t offset, int whence);
+
+int close(int fd);
 
 #endif /* !ISO9660_H */
