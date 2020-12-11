@@ -28,6 +28,9 @@
 #include <k/pic.h>
 #include <k/timer.h>
 #include <k/atapi.h>
+#include <k/iso9660.h>
+
+#include <stdio.h>
 
 #include "multiboot.h"
 
@@ -45,6 +48,16 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_TIMER();
     init_PIC();
     init_ATAPI();
+    read_primary_volume_descriptor();
+
+    const char* pathname = "/USR/VADERS/RES/CHICHE.BMP";
+    u8 bmp_header[14] = { 0 };
+    s32 fd = open(pathname, 0);
+    if (fd != -1) {
+        printf("Sucessfully opened directory %s\n", pathname);
+    }
+
+    read(fd, &bmp_header, 14);
 
     // Test divide by zero int
     // asm volatile ("movl $3, %eax\nmovl $0, %edi\ndivl %edi");

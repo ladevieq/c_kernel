@@ -20,7 +20,9 @@
  */
 
 #ifndef ISO9660_H
-# define ISO9660_H
+#define ISO9660_H
+
+#include <k/kstd.h>
 
 # define __packed __attribute__((__packed__))
 
@@ -65,20 +67,20 @@ enum iso_file_type {
 };
 
 struct iso_dir {
-	u8   dir_size;  /* Length of directory record */
-	u8   ext_size;  /* Extended attribute record length */
-	struct endian32  data_blk;  /* File data block index */
-	struct endian32  file_size; /* File size */
-	char      date[ISO_DATE_LEN];
-	u8   type;    /* File type (enum iso_file_type) */
+	u8                  dir_size;   /* Length of directory record */
+	u8                  ext_size;   /* Extended attribute record length */
+	struct endian32     data_blk;   /* File data block index */
+	struct endian32     file_size;  /* File size */
+	char                date[ISO_DATE_LEN];
+	u8                  type;       /* File type (enum iso_file_type) */
 
 	/* only valid if the file is recorded in interleave mode */
-	u8   unit_size; /* File Unit Size */
-	u8   gap_size;  /* Interleave Gap Size */
+	u8                  unit_size;  /* File Unit Size */
+	u8                  gap_size;   /* Interleave Gap Size */
 
-	struct endian16  vol_seq;
-	u8   idf_len;
-	char    idf[0];     /* file name */
+	struct endian16     vol_seq;
+	u8                  idf_len;
+	char                idf[0];     /* file name */
 } __packed;
 
 /* ISO9660 Primary volume descriptor structure */
@@ -138,11 +140,21 @@ struct iso_prim_voldesc {
 } __packed;
 
 
+#define FD_TABLE_SIZE 256
+
+struct File {
+    u32 initial_lba;
+    off_t offset;
+    size_t size;
+};
+
+void read_primary_volume_descriptor(void);
+
 int open(const char *pathname, int flags);
 
 ssize_t read(int fd, void *buf, size_t count);
 
-size_t seek(int fd, size_t offset, int whence);
+off_t seek(int fd, off_t offset, int whence);
 
 int close(int fd);
 

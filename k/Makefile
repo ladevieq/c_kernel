@@ -39,6 +39,7 @@ OBJS	= \
 	  keyboard.o \
 	  timer.o \
 	  atapi.o \
+	  iso9660.o \
 
 
 DEPS = $(OBJS:.o=.d)
