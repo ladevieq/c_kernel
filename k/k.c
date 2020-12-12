@@ -59,6 +59,8 @@ void k_main(unsigned long magic, multiboot_info_t *info)
 
     read(fd, &bmp_header, 14);
 
+    printf ("%.*s\n", 14, bmp_header);
+
     // Test divide by zero int
     // asm volatile ("movl $3, %eax\nmovl $0, %edi\ndivl %edi");
     // asm volatile ("int $3");

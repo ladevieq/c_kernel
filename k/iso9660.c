@@ -190,13 +190,13 @@ int open(const char *pathname, int flags) {
 
 ssize_t read(int fd, void *buf, size_t count) {
     u8 block[CD_BLOCK_SZ] = { '\0' };
-    u32 sector_number = (count / CD_BLOCK_SZ < 1) ? 1 : count / CD_BLOCK_SZ;
     struct File* file = &FD_TABLE[fd];
+    u32 sector_len = ((file->size < count) ? file->size / CD_BLOCK_SZ : count / CD_BLOCK_SZ) || 1;
     u32 start_lba = file->initial_lba + (file->offset / CD_BLOCK_SZ);
     ssize_t read_count = 0;
     off_t buf_offset = 0;
 
-    for(u32 current_lba = start_lba; current_lba < start_lba + sector_number; current_lba++) {
+    for(u32 current_lba = start_lba; current_lba < start_lba + sector_len; current_lba++) {
         read_block(current_lba, &block);
 
         // We start to copy the data from block + file_off
