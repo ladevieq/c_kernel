@@ -50,21 +50,10 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_ATAPI();
     init_ISO();
 
-    const char* pathname = "/USR/VADERS/RES/CHICHE.BMP";
-    u8 bmp_header[14] = { 0 };
-    s32 fd = open(pathname, 0);
-    if (fd != -1) {
-        printf("Sucessfully opened directory %s\n", pathname);
+    const char* cmdline = info->cmdline;
+    if(open(cmdline, 0)) {
+        printf("Sucessfully opened directory %s\n", cmdline);
     }
-
-    read(fd, &bmp_header, 14);
-
-    printf ("%.*s\n", 14, bmp_header);
-
-    // Test divide by zero int
-    // asm volatile ("movl $3, %eax\nmovl $0, %edi\ndivl %edi");
-    // asm volatile ("int $3");
-    // asm volatile ("int $10");
 
     for (unsigned i = 0; ; ) {
         *fb = star[i++ % 4];

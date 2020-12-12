@@ -174,7 +174,7 @@ int open(const char *pathname, int flags) {
             return -1;
         }
 
-        print_dir_entries(current_dir);
+        // print_dir_entries(current_dir);
 
         current_char += filename_len;
     }

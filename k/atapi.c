@@ -4,13 +4,17 @@
 #include <string.h>
 #include <stdio.h>
 
+// #define DEBUG_ATAPI
+
 static u16 ATAPI_bus = 0;
 static u8 ATAPI_drive = 0;
 
 // Wait helper functions
 void busy_wait(u16 bus) {
     while((inb(ATA_REG_STATUS(bus)) & BSY) != 0) {
+#ifdef DEBUG_ATAPI
         printf("Busy waiting for the disk\n");
+#endif
     }
 }
 
@@ -26,7 +30,9 @@ void wait_device_selection(u16 bus) {
 void wait_packet_requested(u16 bus) {
     while((inb(ATA_REG_STATUS(bus)) & BSY) == BSY ||
           (inb(ATA_REG_STATUS(bus)) & DRQ) != DRQ) {
+#ifdef DEBUG_ATAPI
         printf("Waiting for the disk to request a packet\n");
+#endif
     }
 }
 
@@ -76,11 +82,13 @@ void discover_atapi_drive(void) {
                 ATAPI_bus = bus;
                 ATAPI_drive = drive;
 
+#ifdef DEBUG_ATAPI
                 if (bus == PRIMARY_REG) {
                     printf ("Primary bus\t Drive : %d\t is an ATAPI drive\n", drive);
                 } else {
                     printf ("Secondary bus\t Drive : %d\t is an ATAPI drive\n", drive);
                 }
+#endif
             }
         }
     }
@@ -95,7 +103,9 @@ u32 send_packet(struct SCSI_packet *packet, u16 bus) {
     }
 
     while(inb(ATA_REG_SECTOR_COUNT(bus)) != PACKET_DATA_TRANSMIT) {
+#ifdef DEBUG_ATAPI
         printf("Waiting for packet to be transmitted to the disk\n");
+#endif
     }
 
     return 0;
