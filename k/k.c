@@ -48,7 +48,7 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_TIMER();
     init_PIC();
     init_ATAPI();
-    read_primary_volume_descriptor();
+    init_ISO();
 
     const char* pathname = "/USR/VADERS/RES/CHICHE.BMP";
     u8 bmp_header[14] = { 0 };

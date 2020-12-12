@@ -5,9 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
+static struct iso_prim_voldesc PRIMARY_VOLUME = { 0 };
+
 static struct File FD_TABLE[FD_TABLE_SIZE] = {{ 0 }};
 
-static struct iso_prim_voldesc PRIMARY_VOLUME = { 0 };
 
 // --------------------------------------
 // File descriptor management functions
@@ -40,9 +41,8 @@ s32 remove_dir(s32 fd) {
 // --------------------------------------
 
 
-void read_primary_volume_descriptor(void) {
-    // TODO Fix alignement trouble
-    read_block(ISO_PRIM_VOLDESC_BLOCK, (u16*) &PRIMARY_VOLUME);
+void init_ISO(void) {
+    read_block(ISO_PRIM_VOLDESC_BLOCK, &PRIMARY_VOLUME);
 }
 
 
@@ -188,27 +188,37 @@ int open(const char *pathname, int flags) {
     return insert_dir(&file);
 }
 
-// TODO maybe check of eof ???
 ssize_t read(int fd, void *buf, size_t count) {
     u8 block[CD_BLOCK_SZ] = { '\0' };
     u32 sector_number = (count / CD_BLOCK_SZ < 1) ? 1 : count / CD_BLOCK_SZ;
     struct File* file = &FD_TABLE[fd];
     u32 start_lba = file->initial_lba + (file->offset / CD_BLOCK_SZ);
     ssize_t read_count = 0;
+    off_t buf_offset = 0;
 
     for(u32 current_lba = start_lba; current_lba < start_lba + sector_number; current_lba++) {
-        read_block(current_lba, (u16*) &block);
+        read_block(current_lba, &block);
 
-        off_t buf_offset = (current_lba - start_lba) * CD_BLOCK_SZ;
+        // We start to copy the data from block + file_off
         off_t block_offset = file->offset % CD_BLOCK_SZ;
-        size_t cpy_size = CD_BLOCK_SZ - block_offset;
+        // Assume we'll read till the end of the block
+        size_t cpy_len = CD_BLOCK_SZ - block_offset;
+        // Check if the file stop before block end
+        if (file->size - block_offset < cpy_len) {
+            cpy_len = file->size - block_offset;
+        }
+        // Check if the amount of data to read left is smaller
+        if (read_count + cpy_len > count) {
+            cpy_len = count - read_count;
+        }
 
-        memcpy(buf + buf_offset, block + block_offset, cpy_size);
+        memcpy(buf + buf_offset, block + block_offset, cpy_len);
 
-        read_count += cpy_size;
+        buf_offset += cpy_len;
+        read_count += cpy_len;
+        file->offset += cpy_len;
     }
 
-    file->offset += read_count;
 
     return read_count;
 }

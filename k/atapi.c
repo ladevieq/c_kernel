@@ -31,49 +31,6 @@ void wait_packet_requested(u16 bus) {
 }
 
 
-u32 send_packet(struct SCSI_packet *packet, u16 bus) {
-    // Write the packet
-    u16* raw_packet = (u16*)packet;
-    for (size_t word_index = 0; word_index < (sizeof(struct SCSI_packet) / sizeof(u16)); word_index ++) {
-        outw(ATA_REG_DATA(bus), raw_packet[word_index]);
-    }
-
-    while(inb(ATA_REG_SECTOR_COUNT(bus)) != PACKET_DATA_TRANSMIT) {
-        printf("Waiting for packet to be transmitted to the disk\n");
-    }
-}
-
-void read_block(size_t lba, u16* block) {
-    struct SCSI_packet packet = {
-        .op_code    = READ_12,
-        .lba_hi     = lba >> 0x18,
-        .lba_mihi   = lba >> 0x10,
-        .lba_milo   = lba >> 0x08,
-        .lba_lo     = lba,
-        .transfer_length_lo = 1,
-    };
-
-    select_drive            (ATAPI_bus, ATAPI_drive);
-    wait_device_selection   (ATAPI_bus);
-
-    busy_wait               (ATAPI_bus);
-
-    outb(ATA_REG_FEATURES(ATAPI_bus),       0);     // No overlap / DMA
-    outb(ATA_REG_SECTOR_COUNT(ATAPI_bus),   0); // No queuing
-    outb(ATA_REG_LBA_MI(ATAPI_bus),         CD_BLOCK_SZ);
-    outb(ATA_REG_LBA_HI(ATAPI_bus),         CD_BLOCK_SZ >> 8);
-    outb(ATA_REG_COMMAND(ATAPI_bus),        PACKET);   // Packet
-
-    wait_packet_requested(ATAPI_bus);
-
-    send_packet(&packet, ATAPI_bus);
-
-    for (size_t word_index = 0; word_index < CD_BLOCK_SZ / sizeof(u16); word_index ++) {
-        block[word_index] = inw(ATA_REG_DATA(ATAPI_bus));
-    }
-}
-
-
 // Devices discovery functions
 void select_drive(u16 bus, u8 drive) {
     outb(ATA_REG_DRIVE(bus), drive);
@@ -126,6 +83,51 @@ void discover_atapi_drive(void) {
                 }
             }
         }
+    }
+}
+
+
+u32 send_packet(struct SCSI_packet *packet, u16 bus) {
+    // Write the packet
+    u16* raw_packet = (u16*)packet;
+    for (size_t word_index = 0; word_index < (sizeof(struct SCSI_packet) / sizeof(u16)); word_index ++) {
+        outw(ATA_REG_DATA(bus), raw_packet[word_index]);
+    }
+
+    while(inb(ATA_REG_SECTOR_COUNT(bus)) != PACKET_DATA_TRANSMIT) {
+        printf("Waiting for packet to be transmitted to the disk\n");
+    }
+
+    return 0;
+}
+
+void read_block(size_t lba, void* block) {
+    struct SCSI_packet packet = {
+        .op_code    = READ_12,
+        .lba_hi     = lba >> 0x18,
+        .lba_mihi   = lba >> 0x10,
+        .lba_milo   = lba >> 0x08,
+        .lba_lo     = lba,
+        .transfer_length_lo = 1,
+    };
+
+    select_drive            (ATAPI_bus, ATAPI_drive);
+    wait_device_selection   (ATAPI_bus);
+
+    busy_wait               (ATAPI_bus);
+
+    outb(ATA_REG_FEATURES(ATAPI_bus),       0);     // No overlap / DMA
+    outb(ATA_REG_SECTOR_COUNT(ATAPI_bus),   0); // No queuing
+    outb(ATA_REG_LBA_MI(ATAPI_bus),     (u8)CD_BLOCK_SZ);
+    outb(ATA_REG_LBA_HI(ATAPI_bus),         CD_BLOCK_SZ >> 8);
+    outb(ATA_REG_COMMAND(ATAPI_bus),        PACKET);   // Packet
+
+    wait_packet_requested(ATAPI_bus);
+
+    send_packet(&packet, ATAPI_bus);
+
+    for (size_t word_index = 0; word_index < CD_BLOCK_SZ / sizeof(u16); word_index++) {
+        ((u16*)block)[word_index] = inw(ATA_REG_DATA(ATAPI_bus));
     }
 }
 

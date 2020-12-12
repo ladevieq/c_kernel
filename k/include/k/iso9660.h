@@ -137,6 +137,9 @@ struct iso_prim_voldesc {
 	char                date_expir[ISO_LDATE_LEN]; /* Expiration date */
 	char                date_effect[ISO_LDATE_LEN]; /* Effective date */
 	u8                  filestrutc_version;  /* File Structure Version (1) */
+        u8                  unused6;
+        u8                  app_used[512];
+        u8                  reserved[653];
 } __packed;
 
 
@@ -148,7 +151,7 @@ struct File {
     size_t size;
 };
 
-void read_primary_volume_descriptor(void);
+void init_ISO(void);
 
 int open(const char *pathname, int flags);
 
