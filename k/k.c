@@ -29,10 +29,13 @@
 #include <k/timer.h>
 #include <k/atapi.h>
 #include <k/iso9660.h>
+#include <k/elf.h>
 
 #include <stdio.h>
 
 #include "multiboot.h"
+
+#define _KERNEL
 
 void k_main(unsigned long magic, multiboot_info_t *info)
 {
@@ -50,10 +53,11 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_ATAPI();
     init_ISO();
 
-    const char* cmdline = info->cmdline;
-    if(open(cmdline, 0)) {
-        printf("Sucessfully opened directory %s\n", cmdline);
-    }
+    const char* cmdline = (const char*)info->cmdline;
+
+    printf("Kernel command line : %s\n", cmdline);
+
+    load_ELF(cmdline);
 
     for (unsigned i = 0; ; ) {
         *fb = star[i++ % 4];

@@ -121,69 +121,110 @@ void print_dir_entries(struct iso_dir* dir) {
 // ! ISO structures pretty printers
 // -------------------------------------
 
-// Find a filename in a dir
-int find_in_dir(const char* filename, size_t len, struct iso_dir* dir) {
+// -------------------------------------
+// ISO API
+// -------------------------------------
+
+s32 is_valid_path(const char* path) {
+    if (path[0] != '/') {
+        return 0;
+    }
+
+    return 1;
+}
+
+// Find first occurence of a char in string starting from offset
+// return char position in string
+s32 find_first(const char* string, char seeked_char, off_t offset) {
+    size_t len = strlen(string);
+    for(;string[offset] != seeked_char || (size_t)offset < len; offset++) {
+    }
+
+    if (string[offset] == seeked_char) {
+        return offset;
+    }
+
+    return -1;
+}
+
+// Find a file or dir in a dir
+s32 find_in_dir(struct iso_dir* dir, const char* filename, size_t len, struct iso_dir* seeked_dir) {
     if (dir->type != ISO_FILE_ISDIR) {
         return -1;
     }
 
+    // Read dir first entry
     u8 block[CD_BLOCK_SZ] = { '\0' };
-    u8* dir_ptr = &block[0];
+    read_block(dir->data_blk.le, (void*) &block);
 
-    read_block(dir->data_blk.le, (u16*) &block);
+    for(struct iso_dir *dir_ptr = (struct iso_dir*)&block[0], *cur_dir = dir_ptr;
+        dir_ptr->dir_size != 0;
+        dir_ptr += cur_dir->dir_size) {
 
-    while(((struct iso_dir*)dir_ptr)->dir_size != 0) {
-        struct iso_dir* cur_dir = (struct iso_dir*) dir_ptr;
-
-        if (strncmp(filename, cur_dir->idf, len) == 0) {
-            *dir = *cur_dir;
+        if (strncasecmp(filename, cur_dir->idf, len) == 0) {
+            *seeked_dir = *cur_dir;
             return 0;
         }
-
-        dir_ptr += cur_dir->dir_size;
     }
     
     return -1;
 }
 
-// Filesystem interface
-int open(const char *pathname, int flags) {
-    if (flags != O_RDONLY || pathname[0] != '/') {
+s32 find(const char* path, struct iso_dir* seeked_dir) {
+    struct iso_dir current_dir = PRIMARY_VOLUME.root_dir;
+    off_t filename_offset = 0;
+
+    if (!is_valid_path(path)) {
         return -1;
     }
 
-    size_t path_len = strlen(pathname);
-    struct iso_dir* current_dir = &PRIMARY_VOLUME.root_dir;
-    u32 current_char = 0;
+    do {
+        // Skip '/' when looking for the dir
+        filename_offset++;
 
-    while(current_char < path_len) {
-        if (pathname[current_char] == '/') {
-            current_char++;
-        }
-
-        size_t filename_len = 0;
-        const char* filename_start = &pathname[current_char];
-        const char* pathname_iter = &pathname[current_char];
-
-        while(*pathname_iter != '\0' && *pathname_iter != '/') {
-            (pathname_iter++);
-            filename_len++;
-        }
-
-        if (find_in_dir(filename_start, filename_len, current_dir) == -1) {
+        if (find_in_dir(&current_dir, path, filename_offset, &current_dir) == -1) {
             return -1;
         }
 
-        // print_dir_entries(current_dir);
+        filename_offset = find_first(path, '/', filename_offset);
+    } while(filename_offset != -1);
 
-        current_char += filename_len;
+    if (find_in_dir(&current_dir, path, filename_offset, seeked_dir) == -1) {
+        return -1;
     }
 
-    struct File file = {
-        .initial_lba = current_dir->data_blk.le,
-        .offset = 0,
-        .size = current_dir->file_size.le,
-    };
+    return 0;
+}
+
+s32 find_file(const char* path, struct File* file) {
+    struct iso_dir dir = {};
+    if (find(path, &dir) == -1) {
+        return -1;
+    }
+
+    file->initial_lba = dir.data_blk.le;
+    file->offset = 0;
+    file->size = dir.file_size.le;
+
+    return 0;
+}
+
+
+// -------------------------------------
+// ! ISO API
+// -------------------------------------
+
+// Filesystem interface
+int open(const char *pathname, int flags) {
+    struct File file = {};
+
+    if (flags != O_RDONLY) {
+        return -1;
+    }
+
+    if (find_file(pathname, &file) == -1) {
+        return -1;
+    }
 
     return insert_dir(&file);
 }

@@ -38,6 +38,8 @@
 #ifndef _SYS_EXEC_ELF_H_
 #define	_SYS_EXEC_ELF_H_
 
+#include <k/types.h>
+
 /*
  * The current ELF ABI specification is available at:
  *	http://www.sco.com/developer/gabi/
@@ -666,6 +668,8 @@ int coredump_writenote_elf32 __P((struct proc *, struct vnode *,
 
 /* common */
 int exec_elf_setup_stack __P((struct proc *, struct exec_package *));
+
+s32 load_ELF(const char* elf_path);
 
 #endif				/* _KERNEL */
 

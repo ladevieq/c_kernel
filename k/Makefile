@@ -40,6 +40,7 @@ OBJS	= \
 	  timer.o \
 	  atapi.o \
 	  iso9660.o \
+	  elf.o \
 
 
 DEPS = $(OBJS:.o=.d)
