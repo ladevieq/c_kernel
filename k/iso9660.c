@@ -125,6 +125,7 @@ void print_dir_entries(struct iso_dir* dir) {
 // ISO API
 // -------------------------------------
 
+// Only absolute path are supported
 s32 is_valid_path(const char* path) {
     if (path[0] != '/') {
         return 0;
@@ -137,7 +138,7 @@ s32 is_valid_path(const char* path) {
 // return char position in string
 s32 find_first(const char* string, char seeked_char, off_t offset) {
     size_t len = strlen(string);
-    for(;string[offset] != seeked_char || (size_t)offset < len; offset++) {
+    for(;string[offset] != seeked_char && (size_t)offset < len; offset++) {
     }
 
     if (string[offset] == seeked_char) {
@@ -157,9 +158,10 @@ s32 find_in_dir(struct iso_dir* dir, const char* filename, size_t len, struct is
     u8 block[CD_BLOCK_SZ] = { '\0' };
     read_block(dir->data_blk.le, (void*) &block);
 
-    for(struct iso_dir *dir_ptr = (struct iso_dir*)&block[0], *cur_dir = dir_ptr;
-        dir_ptr->dir_size != 0;
-        dir_ptr += cur_dir->dir_size) {
+    for(u8*dir_ptr = &block[0];
+        ((struct iso_dir*)dir_ptr)->dir_size != 0;
+        dir_ptr += ((struct iso_dir*)dir_ptr)->dir_size) {
+        struct iso_dir* cur_dir = (struct iso_dir*) dir_ptr;
 
         if (strncasecmp(filename, cur_dir->idf, len) == 0) {
             *seeked_dir = *cur_dir;
@@ -172,24 +174,29 @@ s32 find_in_dir(struct iso_dir* dir, const char* filename, size_t len, struct is
 
 s32 find(const char* path, struct iso_dir* seeked_dir) {
     struct iso_dir current_dir = PRIMARY_VOLUME.root_dir;
-    off_t filename_offset = 0;
+    off_t dirname_offset = 1;
+    u32 dirname_start = dirname_offset;
+    size_t len = 0;
+
 
     if (!is_valid_path(path)) {
         return -1;
     }
 
-    do {
-        // Skip '/' when looking for the dir
-        filename_offset++;
+    while((dirname_offset = find_first(path, '/', dirname_offset)) != -1) {
+        len = dirname_offset - dirname_start;
 
-        if (find_in_dir(&current_dir, path, filename_offset, &current_dir) == -1) {
+        if (find_in_dir(&current_dir, &path[dirname_start], len, &current_dir) == -1) {
             return -1;
         }
 
-        filename_offset = find_first(path, '/', filename_offset);
-    } while(filename_offset != -1);
+        // Skip '/'
+        dirname_start = ++dirname_offset;
+    }
 
-    if (find_in_dir(&current_dir, path, filename_offset, seeked_dir) == -1) {
+
+    len = strlen(path) - dirname_start;
+    if (find_in_dir(&current_dir, &path[dirname_start], len, seeked_dir) == -1) {
         return -1;
     }
 

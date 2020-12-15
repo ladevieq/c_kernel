@@ -153,6 +153,14 @@ struct File {
 
 void init_ISO(void);
 
+// ISO fs API
+s32 find_in_dir(struct iso_dir* dir, const char* filename, size_t len, struct iso_dir* seeked_size);
+
+s32 find(const char* path, struct iso_dir* seeked_dir);
+
+s32 find_file(const char* path, struct File* file);
+
+// TODO move syscalls
 int open(const char *pathname, int flags);
 
 ssize_t read(int fd, void *buf, size_t count);
