@@ -54,12 +54,12 @@ void print_program_header(Elf32_Phdr* program_header) {
     printf("\n");
 }
 
-void fill_segment(Elf32_Phdr* program_header) {
-    size_t bytes_to_clear = program_header->p_memsz - program_header->p_filesz;
-    memset((void*) (program_header->p_vaddr + program_header->p_filesz), 0, bytes_to_clear);
+void pad_segment(Elf32_Phdr* program_header) {
+    size_t padding_len = program_header->p_memsz - program_header->p_filesz;
+    memset((void*) (program_header->p_vaddr + program_header->p_filesz), 0, padding_len);
 }
 
-void copy_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
+void load_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
     if (program_header->p_filesz > 0) {
         u8 block[2048] = { 0 };
         size_t block_count = (program_header->p_filesz / CD_BLOCK_SZ) | 1;
@@ -67,12 +67,16 @@ void copy_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
         off_t dest_off = 0;
 
         for (u32 block_index = 0; block_index < block_count; block_index++) {
-            size_t cpy_len = CD_BLOCK_SZ - (program_header->p_filesz % CD_BLOCK_SZ);
+            size_t cpy_len = CD_BLOCK_SZ;
             off_t src_off = 0;
 
             if (block_index == 0) {
+                // Crop the start of the block
                 cpy_len -= program_header->p_offset % CD_BLOCK_SZ;
                 src_off = program_header->p_offset;
+            } else if (block_index == block_count) {
+                // Crop the end of the block
+                cpy_len -= CD_BLOCK_SZ - (program_header->p_filesz % CD_BLOCK_SZ);
             }
 
             read_block(first_block + block_index, &block[0]);
@@ -83,7 +87,7 @@ void copy_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
         }
 
         if (program_header->p_filesz != program_header->p_memsz) {
-            fill_segment(program_header);
+            pad_segment(program_header);
         }
 
     }
@@ -122,7 +126,9 @@ s32 load_ELF(const char* elf_path) {
 
         print_program_header(&program_header);
 
-        copy_segment(&program_header, elf_file.initial_lba);
+        if (program_header.p_type == PT_LOAD) {
+            load_segment(&program_header, elf_file.initial_lba);
+        }
     }
 
     void (*entry_point)(void) = (void*)elf_header.e_entry;
