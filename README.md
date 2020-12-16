@@ -29,17 +29,19 @@ As of today i don't plan to implement write to devices using ATAPI.
 
 ### Filesystem
 The filesystem used by the kernel is ISO as we only read from CD-ROMs through the ATAPI driver.
-The filesystem API is not yet ready so working with ISO in the kernel it not possible.
+The filesystem API for ISO filesystem includes function to locate a file / dir.
+The API will be extended as i need more functions to work with ISO.
 
 Once again i plan to use another filesystem later but for now it's enough.
 
 ### Syscalls
 Some syscalls are already implemented like IO syscalls, gettick, etc.
-But they are not yet available for the userland, this will change once userland is setup and can run executables.
+But they are not yet available from userland, this will change once userland is setup and can run executables.
 
 ### Executables
-The executable format the will be supported is linux ELF format.
+The kernel is already capable of loading and running ELF executables.
+Some kernel features are currently missing so nothing happen when running an executable.
 
 
 ## Status
-I'm currently working on making ELFs executable by the kernel and creating an API to easily work with the ISO filesystem.
+Currently syscalls are being setup in the kernel for the ELF executable to really do something
