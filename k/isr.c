@@ -5,13 +5,28 @@
 
 #include <stdio.h>
 
+void print_int_info(u32 int_number, u32 error_code) {
+#define X(vector_number, interrupt_name) if (int_number == vector_number) { \
+    printf("%s", #interrupt_name);                                                   \
+}
+#include <k/isr.def>
+#undef X
+
+    if (error_code != 0) {
+        printf(" error code : %u", error_code);
+    }
+
+    printf("\n");
+}
+
 void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_code) {
-    // printf("Received interrupt %u\n", vector_number);
+    print_int_info(vector_number, error_code);
 
     if (vector_number == INTERRUPT_DIVIDE_BY_ZERO) {
         printf("Divide by zero issued\n");
     }
 
+    // PIC interrupts
     if (vector_number >= MASTER_PIC_VECTOR_OFFSET
         && vector_number < SLAVE_PIC_VECTOR_OFFSET + 7) {
         if (vector_number == INTERRUPT_TIMER_IRQ) {
@@ -29,9 +44,5 @@ void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_
         }
 
         send_EOI(vector_number);
-    }
-
-    if (error_code != 0) {
-        printf("Interrupt with error occured error code : %u", error_code);
     }
 }

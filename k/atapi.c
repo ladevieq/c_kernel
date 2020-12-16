@@ -141,7 +141,6 @@ void read_block(size_t lba, void* block) {
     }
 }
 
-
 void init_ATAPI() {
     discover_atapi_drive();
 

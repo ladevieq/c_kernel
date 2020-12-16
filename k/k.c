@@ -53,11 +53,7 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_ATAPI();
     init_ISO();
 
-    const char* cmdline = (const char*)info->cmdline;
-
-    printf("Kernel command line : %s\n", cmdline);
-
-    load_ELF(cmdline);
+    load_ELF((const char*)info->cmdline);
 
     for (unsigned i = 0; ; ) {
         *fb = star[i++ % 4];

@@ -85,11 +85,10 @@ void load_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
 
             dest_off += cpy_len;
         }
+    }
 
-        if (program_header->p_filesz != program_header->p_memsz) {
-            pad_segment(program_header);
-        }
-
+    if (program_header->p_filesz != program_header->p_memsz) {
+        pad_segment(program_header);
     }
 }
 
