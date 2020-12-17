@@ -42,6 +42,7 @@ OBJS	= \
 	  iso9660.o \
 	  elf.o \
 	  syscalls.o \
+	  fs.o \
 
 
 DEPS = $(OBJS:.o=.d)
