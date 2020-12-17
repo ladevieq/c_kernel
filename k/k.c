@@ -30,12 +30,11 @@
 #include <k/atapi.h>
 #include <k/iso9660.h>
 #include <k/elf.h>
+#include <k/syscalls.h>
 
 #include <stdio.h>
 
 #include "multiboot.h"
-
-#define _KERNEL
 
 void k_main(unsigned long magic, multiboot_info_t *info)
 {
@@ -52,6 +51,7 @@ void k_main(unsigned long magic, multiboot_info_t *info)
     init_PIC();
     init_ATAPI();
     init_ISO();
+    init_syscalls_dispatch_table();
 
     load_ELF((const char*)info->cmdline);
 

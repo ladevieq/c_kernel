@@ -41,6 +41,7 @@ OBJS	= \
 	  atapi.o \
 	  iso9660.o \
 	  elf.o \
+	  syscalls.o \
 
 
 DEPS = $(OBJS:.o=.d)

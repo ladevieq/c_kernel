@@ -669,8 +669,8 @@ int coredump_writenote_elf32 __P((struct proc *, struct vnode *,
 /* common */
 int exec_elf_setup_stack __P((struct proc *, struct exec_package *));
 
-s32 load_ELF(const char* elf_path);
-
 #endif				/* _KERNEL */
+
+s32 load_ELF(const char* elf_path);
 
 #endif				/* !_SYS_EXEC_ELF_H_ */

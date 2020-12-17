@@ -14,14 +14,14 @@ enum INTERRUPTS_NAME {
 #undef X
 
 struct Registers {
-    u32 eax;
-    u32 ecx;
-    u32 edx;
-    u32 ebx;
-    u32 esp;
-    u32 ebp;
-    u32 esi;
     u32 edi;
+    u32 esi;
+    u32 ebp;
+    u32 esp;
+    u32 ebx;
+    u32 edx;
+    u32 ecx;
+    u32 eax;
 };
 
 void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_code);
