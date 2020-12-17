@@ -4,14 +4,16 @@
 #include <k/keyboard.h>
 #include <k/timer.h>
 
-typedef void (*syscall_wrapper)(u32, u32, u32);
+typedef u32 (*syscall_wrapper)(u32, u32, u32);
 
 static syscall_wrapper syscall_dispatch_table[NR_SYSCALL] = { NULL };
 
-void empty_wrapper() {}
+u32 empty_wrapper() {
+    return 0;
+}
 
 // Define syscalls wrappers
-#define X(name, func) void wrapper_##name(u32 ebx, u32 ecx, u32 edx) { \
+#define X(name, func) u32 wrapper_##name(u32 ebx, u32 ecx, u32 edx) { \
     return func; \
 }
 #include <k/syscalls.def>
@@ -25,6 +27,6 @@ void init_syscalls_dispatch_table(void) {
 }
 
 // EAX contains the syscall index for the dispatch table
-void dispatch_syscall(u32 syscall_index, u32 ebx, u32 ecx, u32 edx) {
-    syscall_dispatch_table[syscall_index](ebx, ecx, edx);
+u32 dispatch_syscall(u32 syscall_index, u32 ebx, u32 ecx, u32 edx) {
+    return syscall_dispatch_table[syscall_index](ebx, ecx, edx);
 }

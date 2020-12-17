@@ -20,17 +20,19 @@ void print_int_info(u32 int_number, u32 error_code) {
     printf("\n");
 }
 
-void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_code) {
-    print_int_info(vector_number, error_code);
+void interrupt_handler(struct IntHandlerArgs* args) {
+    u32 vec_number = args->vector_number;
+    u32 error_code = args->error_code;
+    print_int_info(vec_number, error_code);
 
     // PIC interrupts
-    if (vector_number >= MASTER_PIC_VECTOR_OFFSET
-        && vector_number < SLAVE_PIC_VECTOR_OFFSET + 7) {
-        if (vector_number == INTERRUPT_TIMER_IRQ) {
+    if (vec_number >= MASTER_PIC_VECTOR_OFFSET
+        && vec_number < SLAVE_PIC_VECTOR_OFFSET + 7) {
+        if (vec_number == INTERRUPT_TIMER_IRQ) {
             tick();
         }
 
-        if (vector_number == INTERRUPT_KEYBOARD_IRQ) {
+        if (vec_number == INTERRUPT_KEYBOARD_IRQ) {
             pullkey();
 
             s32 key = getkey();
@@ -39,11 +41,15 @@ void interrupt_handler(struct Registers registers, u32 vector_number, u32 error_
             }
         }
 
-        send_EOI(vector_number);
+        send_EOI(vec_number);
     }
 
-    // TODO revert args
-    if (vector_number == INTERRUPT_SYSCALL) {
-        dispatch_syscall(registers.eax, registers.ebx, registers.ecx, registers.edx);
+    if (vec_number == INTERRUPT_SYSCALL) {
+        args->registers.eax = dispatch_syscall(
+            args->registers.eax,
+            args->registers.ebx,
+            args->registers.ecx,
+            args->registers.edx
+        );
     }
 }

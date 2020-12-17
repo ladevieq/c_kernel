@@ -3,7 +3,9 @@
 .global interrupt_handler
 isr:
     pusha
+    push %esp
     call interrupt_handler
+    add $4, %esp
     popa
     // Remove error code and interrupt code from the stack
     add $8, %esp
