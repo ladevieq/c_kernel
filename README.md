@@ -10,6 +10,8 @@ This will change in the future as i implement more and more features into the ke
 
 Interrupts are handled by assembly routines (ISRs). Those ISRs pushes vector index and error onto the stack and then calls the C interrupt wrapper. The wrapper will then dispatch the interrupt handling to the correct C function.
 
+Syscalls interrupts are dispatched to a table and return their values to userland.
+
 ### PIC
 The PIC is configured to allow only keyboard and timer interrupts as i don't need more that those two.
 Later on other interrupts will be forwarded to the CPU by the PIC as i need them.
@@ -35,8 +37,24 @@ The API will be extended as i need more functions to work with ISO.
 Once again i plan to use another filesystem later but for now it's enough.
 
 ### Syscalls
-Some syscalls are already implemented like IO syscalls, gettick, etc.
-But they are not yet available from userland, this will change once userland is setup and can run executables.
+Some syscalls are already implemented on kernel side like IO syscalls, gettick, etc.
+
+Those can be called from userland code, it's the case when running executables.
+
+Currently 12 syscalls planned to be implemented :
+* [ ] write 
+* [ ] SBRK
+* [x] getkey
+* [x] gettick
+* [x] open
+* [x] read
+* [x] seek
+* [x] close
+* [ ] setvideo
+* [ ] swap_frontbuffer
+* [ ] playsound
+* [ ] setpaletter
+* [ ] getmouse
 
 ### Executables
 The kernel is already capable of loading and running ELF executables.
@@ -44,4 +62,4 @@ Some kernel features are currently missing so nothing happen when running an exe
 
 
 ## Status
-Currently syscalls are being setup in the kernel for the ELF executable to really do something
+Debugging ELF execution
