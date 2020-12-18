@@ -14,7 +14,7 @@ u32 empty_wrapper() {
 
 // Define syscalls wrappers
 #define X(name, func) u32 wrapper_##name(u32 ebx, u32 ecx, u32 edx) {   \
-    printf("%s\n", #name);                                              \
+    printf("%s ebx : %u ecx : %u edx : %u\n", #name, ebx, ecx, edx);    \
     return func;                                                        \
 }
 #include <k/syscalls.def>

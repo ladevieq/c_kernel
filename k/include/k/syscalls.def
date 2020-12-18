@@ -1,5 +1,5 @@
 X(WRITE, empty_wrapper())
-X(SBRK, empty_wrapper())
+X(SBRK, sbrk(ebx))
 X(GETKEY, getkey())
 X(GETTICK, gettick())
 X(OPEN, open(ebx, ecx))

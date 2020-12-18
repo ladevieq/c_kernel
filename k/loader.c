@@ -1,6 +1,8 @@
+#include <k/loader.h>
 #include <k/elf.h>
 #include <k/iso9660.h>
 #include <k/atapi.h>
+#include <k/sbrk.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -127,6 +129,10 @@ s32 load_ELF(const char* elf_path) {
 
         if (program_header.p_type == PT_LOAD) {
             load_segment(&program_header, elf_file.initial_lba);
+        }
+
+        if (ph_index == elf_header.e_phnum - 1) {
+            set_brk((void*) program_header.p_vaddr + program_header.p_memsz);
         }
     }
 

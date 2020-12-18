@@ -40,9 +40,10 @@ OBJS	= \
 	  timer.o \
 	  atapi.o \
 	  iso9660.o \
-	  elf.o \
+	  loader.o \
 	  syscalls.o \
 	  fs.o \
+	  sbrk.o \
 
 
 DEPS = $(OBJS:.o=.d)

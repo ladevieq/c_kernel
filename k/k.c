@@ -29,7 +29,7 @@
 #include <k/timer.h>
 #include <k/atapi.h>
 #include <k/iso9660.h>
-#include <k/elf.h>
+#include <k/loader.h>
 #include <k/syscalls.h>
 
 #include <stdio.h>
