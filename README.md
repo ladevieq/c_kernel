@@ -43,7 +43,7 @@ Those can be called from userland code, it's the case when running executables.
 
 Currently 12 syscalls planned to be implemented :
 * [ ] write 
-* [ ] SBRK
+* [x] SBRK
 * [x] getkey
 * [x] gettick
 * [x] open
@@ -53,7 +53,7 @@ Currently 12 syscalls planned to be implemented :
 * [ ] setvideo
 * [ ] swap_frontbuffer
 * [ ] playsound
-* [ ] setpaletter
+* [ ] setpalette
 * [ ] getmouse
 
 ### Executables
@@ -62,4 +62,4 @@ Some kernel features are currently missing so nothing happen when running an exe
 
 
 ## Status
-Debugging ELF execution
+Implementing missing syscalls so that running executables actually draw something to screen
