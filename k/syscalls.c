@@ -13,15 +13,16 @@ u32 empty_wrapper() {
 }
 
 // Define syscalls wrappers
-#define X(name, func) u32 wrapper_##name(u32 ebx, u32 ecx, u32 edx) { \
-    return func; \
+#define X(name, func) u32 wrapper_##name(u32 ebx, u32 ecx, u32 edx) {   \
+    printf("%s\n", #name);                                              \
+    return func;                                                        \
 }
 #include <k/syscalls.def>
 #undef X
 
 // Init dispatch table
 void init_syscalls_dispatch_table(void) {
-#define X(name, func) syscall_dispatch_table[SYSCALL_##name - 1] = &wrapper_##name;
+#define X(name, func) syscall_dispatch_table[SYSCALL_##name] = &wrapper_##name;
 #include <k/syscalls.def>
 #undef X
 }

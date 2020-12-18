@@ -62,7 +62,7 @@ void pad_segment(Elf32_Phdr* program_header) {
 void load_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
     if (program_header->p_filesz > 0) {
         u8 block[2048] = { 0 };
-        size_t block_count = (program_header->p_filesz / CD_BLOCK_SZ) | 1;
+        size_t block_count = (program_header->p_filesz / CD_BLOCK_SZ) + 1;
         off_t first_block = elf_first_block + (program_header->p_offset / CD_BLOCK_SZ);
         off_t dest_off = 0;
 
@@ -73,7 +73,7 @@ void load_segment(Elf32_Phdr* program_header, u32 elf_first_block) {
             if (block_index == 0) {
                 // Crop the start of the block
                 cpy_len -= program_header->p_offset % CD_BLOCK_SZ;
-                src_off = program_header->p_offset;
+                src_off = program_header->p_offset % CD_BLOCK_SZ;
             } else if (block_index == block_count) {
                 // Crop the end of the block
                 cpy_len -= CD_BLOCK_SZ - (program_header->p_filesz % CD_BLOCK_SZ);

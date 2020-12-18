@@ -22,7 +22,7 @@ int open(const char *pathname, int flags) {
 ssize_t read(int fd, void *buf, size_t count) {
     u8 block[CD_BLOCK_SZ] = { '\0' };
     struct File* file = get_file(fd);
-    u32 sector_len = ((file->size < count) ? file->size / CD_BLOCK_SZ : count / CD_BLOCK_SZ) || 1;
+    u32 sector_len = file->size / CD_BLOCK_SZ + 1;
     u32 start_lba = file->initial_lba + (file->offset / CD_BLOCK_SZ);
     ssize_t read_count = 0;
     off_t buf_offset = 0;
